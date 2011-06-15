@@ -8,5 +8,6 @@ class GlaSpider(BaseSpider):
     start_urls = ["http://www.gla.ac.uk"]
     def parse(self, response):
         hxs = HtmlXPathSelector(response)
-        filename = response.url.split("/")[-2]
-        open('temp.txt','wb').write(response.body)
+        images = hxs.select('//img/@src').extract()
+        for image in images:
+            print image
