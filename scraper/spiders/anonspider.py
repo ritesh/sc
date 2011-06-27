@@ -1,6 +1,7 @@
 from scrapy.contrib.spiders import CrawlSpider, Rule
 from scrapy.contrib.linkextractors.sgml import SgmlLinkExtractor
 from scrapy.selector import HtmlXPathSelector
+from scrapy.http import Request
 import re
 import urlparse
 from scraper.items import MyImageItem
@@ -10,9 +11,9 @@ class GlaSpider(CrawlSpider):
     """A simple spider for gla.ac.uk"""
     name = "anonspider"
     allowed_domains = ["gla.ac.uk"]
-    start_urls = ["http://www.dcs.gla.ac.uk/~tws/"]
+    start_urls = ["http://www.dcs.gla.ac.uk/"]
     rules = (
-            Rule(SgmlLinkExtractor(allow=("/", ))),
+            Rule(SgmlLinkExtractor(allow=("/", )),callback='parse_data'),
             Rule(SgmlLinkExtractor(allow=('(.*)\.html$', )), callback='parse_data'),
             )
 
@@ -34,4 +35,7 @@ class GlaSpider(CrawlSpider):
             print imgurl 
             item['image_urls'].append(imgurl)
             yield item
+        for url in hxs.select('//a/@href').extract():
+            yield Request(url, callback=self.parse_data)
+
 

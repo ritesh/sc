@@ -15,5 +15,6 @@ DEFAULT_ITEM_CLASS = 'scraper.items.ScraperItem'
 USER_AGENT = '%s/%s' % (BOT_NAME, BOT_VERSION)
 ITEM_PIPELINES = ['scrapy.contrib.pipeline.images.ImagesPipeline']
 IMAGES_STORE = '/home/ritesh/code/scraper/scraper/images'
-
+IMAGES_MIN_HEIGHT = 110
+IMAGES_MIN_WIDTH = 110
 
