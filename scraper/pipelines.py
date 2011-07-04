@@ -22,7 +22,6 @@ class DbPipeline(object):
                 )
 
     def process_item(self,item,spider):
-        log.msg("ENTERING THE DB", level=log.DEBUG)
         query = self.dbpool.runInteraction(self.__insertdata, item)
         query.addErrback(self.handle_error)
         return item
