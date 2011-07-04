@@ -10,11 +10,11 @@ from scrapy.log import log
 class GlaSpider(CrawlSpider):
     """A simple spider for gla.ac.uk"""
     name = "anonspider"
-    allowed_domains = ["gla.ac.uk"]
-    start_urls = ["http://www.dcs.gla.ac.uk/"]
+    allowed_domains = ['www.gla.ac.uk']
+    start_urls = ["http://dcs.gla.ac.uk/"]
     rules = (
             Rule(SgmlLinkExtractor(allow=("/", )),callback='parse_data'),
-            Rule(SgmlLinkExtractor(allow=('(.*)\.html$', )), callback='parse_data'),
+           # Rule(SgmlLinkExtractor(allow=('(.*)\.html$', )), callback='parse_data'),
             )
 
 
@@ -32,9 +32,9 @@ class GlaSpider(CrawlSpider):
             #absolute
             else:
                 imgurl = urlparse.urljoin(response.url,image)
-            print imgurl 
-            item['image_urls'].append(imgurl)
-            yield item
+            if re.match('^.*(jpg|jpeg)$', imgurl, re.IGNORECASE):
+                item['image_urls'].append(imgurl)
+                yield item
         for url in hxs.select('//a/@href').extract():
             yield Request(url, callback=self.parse_data)
 

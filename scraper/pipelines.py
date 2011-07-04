@@ -6,10 +6,10 @@ from scrapy import log
 from twisted.enterprise import adbapi
 import MySQLdb.cursors
 import time
-class ScraperPipeline(object):
-    def process_item(self, item, spider):
-        print "Entered scraperpipeline"
-        return item
+# Database storage pipeline. Adapted from Scrapy docs
+# Connects to a MySQL database via a connection pool to allow
+# for non blocking DB access
+
 class DbPipeline(object):
     def __init__(self):
         self.dbpool = adbapi.ConnectionPool('MySQLdb', 
@@ -20,24 +20,29 @@ class DbPipeline(object):
                 charset='utf8',
                 use_unicode=True
                 )
+
     def process_item(self,item,spider):
+        log.msg("ENTERING THE DB", level=log.DEBUG)
         query = self.dbpool.runInteraction(self.__insertdata, item)
         query.addErrback(self.handle_error)
         return item
+
     def __insertdata(self, tx, item):
-        tx.execute("select * from sites where url = %s", (item['url'][0],))
-        result = tx.fetchone()
-        if result:
-            log.msg("Stored already in db: %s" % item, level=log.DEBUG)
-        else:
-            tx.execute(\
-                    "insert into sites(name, url, description, created) "
-                    "values (%s, %s, %s, %s)",
-                    (item['name'][0],
-                     item['url'][0],
-                     item['description'][0],
-                     time.time())
-                    )
-            log.msg("Item stored in db: %s" % item, level=log.DEBUG)
+        for img in item['images']:
+            tx.execute("select * from gla where url = %s", (img['url'],))
+            result = tx.fetchone()
+            if result:
+                log.msg("Stored already", level=log.DEBUG)
+            else:
+                tx.execute(\
+                        "insert into gla(url, localpath, checksum, created) "
+                        "values (%s, %s, %s, %s)",
+                        (img['url'],
+                         img['path'],
+                         img['checksum'],
+                         time.time())
+                        )
+                log.msg("Item stored in db", level=log.DEBUG)
+
     def handle_error(self, e):
         log.err(e)
