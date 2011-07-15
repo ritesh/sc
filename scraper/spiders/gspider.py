@@ -14,7 +14,7 @@ class GSpider(CrawlSpider):
     start_urls = ["http://www.gumtree.com/glasgow"]
     rules = (
             Rule(SgmlLinkExtractor(allow=("/", )),callback='parse_data'),
-            #Rule(SgmlLinkExtractor(allow=('(.*)\.html$', )), callback='parse_data'),
+            Rule(SgmlLinkExtractor(allow=('(.*)\.html$', )), callback='parse_data'),
             )
 
 
