@@ -1,0 +1,1 @@
+create table data(id integer primary key autoincrement, url varchar(100) not null, localpath varchar(500) not null, checksum varchar(32) not null, created integer not null, spidername varchar(40) not null);

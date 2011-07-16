@@ -14,7 +14,7 @@ NEWSPIDER_MODULE = 'scraper.spiders'
 DEFAULT_ITEM_CLASS = 'scraper.items.ScraperItem'
 USER_AGENT = '%s/%s' % (BOT_NAME, BOT_VERSION)
 ITEM_PIPELINES = ['scrapy.contrib.pipeline.images.ImagesPipeline',
-'scraper.pipelines.DbPipeline']
+'scraper.pipelines.DbSqlitePipeline']
 IMAGES_STORE = '/users/mscit/1006510k/images/scraper/'
 IMAGES_MIN_HEIGHT = 110
 IMAGES_MIN_WIDTH = 110
