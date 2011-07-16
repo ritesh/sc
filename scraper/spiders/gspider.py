@@ -19,7 +19,6 @@ class GSpider(CrawlSpider):
 
 
     def parse_data(self, response):
-        self.log('Entering the data parser!')
         hxs = HtmlXPathSelector(response)
         items = []
         images = hxs.select('//img/@src').extract()
