@@ -37,5 +37,3 @@ class GlaSpider(CrawlSpider):
                 yield item
         for url in hxs.select('//a/@href').extract():
             yield Request(url, callback=self.parse_data)
-
-
