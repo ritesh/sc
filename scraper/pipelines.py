@@ -1,7 +1,5 @@
 # Define your item pipelines here
 #
-# Don't forget to add your pipeline to the ITEM_PIPELINES setting
-# See: http://doc.scrapy.org/topics/item-pipeline.html
 from scrapy import log
 from twisted.enterprise import adbapi
 import MySQLdb.cursors
@@ -24,24 +22,25 @@ class DbPipeline(object):
                 )
 
     def process_item(self,item,spider):
-        query = self.dbpool.runInteraction(self.__insertdata, item)
+        query = self.dbpool.runInteraction(self.__insertdata, item, spider.name)
         query.addErrback(self.handle_error)
         return item
 
-    def __insertdata(self, tx, item):
+    def __insertdata(self, tx, item, spidername):
         for img in item['images']:
-            tx.execute("select * from gla where url = %s", (img['url'],))
+            tx.execute("select * from data where url = ?", (img['url'],))
             result = tx.fetchone()
             if result:
-                log.msg("Stored already", level=log.DEBUG)
+                log.msg("Item has been stored previously", level=log.DEBUG)
             else:
                 tx.execute(\
-                        "insert into gla(url, localpath, checksum, created) "
-                        "values (%s, %s, %s, %s)",
+                        "insert into data(url, localpath, checksum, created, spidername)"
+                        "values (?, ?, ?, ?, ?)",
                         (img['url'],
                          img['path'],
                          img['checksum'],
-                         time.time())
+                         time.time(),
+                         spidername)
                         )
                 log.msg("Item stored in db", level=log.DEBUG)
 
@@ -64,7 +63,6 @@ class DbSqlitePipeline(object):
     def __insertdata(self,tx,item,spider):
         """Insert data into the sqlite3 database"""
         spidername=spider.name
-        log.msg(spidername, level=log.DEBUG)
         for img in item['images']:
             tx.execute("select * from data where url = ?", (img['url'],))
             result = tx.fetchone()
@@ -75,7 +73,7 @@ class DbSqlitePipeline(object):
                         "insert into data(url, localpath, checksum, created, spidername) values (?,?,?,?,?)",(
                             img['url'],
                             img['path'],
-                            img['checksum'], 
+                            img['checksum'],
                             time.time(),
                             spidername)
                         )
