@@ -8,7 +8,7 @@
 
 BOT_NAME = 'scraper'
 BOT_VERSION = '1.0'
-LOG_LEVEL="ERROR"
+#LOG_LEVEL="ERROR"
 SPIDER_MODULES = ['scraper.spiders']
 NEWSPIDER_MODULE = 'scraper.spiders'
 DEFAULT_ITEM_CLASS = 'scraper.items.ScraperItem'

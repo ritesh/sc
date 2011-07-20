@@ -36,6 +36,9 @@ class CraigSpider(CrawlSpider):
                 item['image_urls'].append(imgurl)
                 yield item
         for url in hxs.select('//a/@href').extract():
-            yield Request(url, callback=self.parse_data)
+            if re.match('^http+', url):
+                yield Request(url, callback=self.parse_data)
+            else:
+                yield Request(urlparse.urljoin(response.url, url), callback=self.parse_data)
 
 
