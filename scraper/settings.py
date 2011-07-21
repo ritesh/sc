@@ -20,4 +20,5 @@ ITEM_PIPELINES = ['scrapy.contrib.pipeline.images.ImagesPipeline',
 IMAGES_STORE = '/users/mscit/1006510k/images/scraper/'
 IMAGES_MIN_HEIGHT = 110
 IMAGES_MIN_WIDTH = 110
-
+#Throttle downloads
+DOWNLOAD_DELAY=0.5

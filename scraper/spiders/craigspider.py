@@ -8,15 +8,11 @@ from scraper.items import MyImageItem
 from scrapy.log import log
 
 class CraigSpider(CrawlSpider):
-    """A simple spider for gumtree"""
+    """docstring for CraigSpider"""
     name = "craigslist"
     allowed_domains = ["london.craigslist.co.uk", "images.craigslist.com"]
     start_urls = ["http://london.craigslist.co.uk/search/sss?query=&srchType=A&minAsk=&maxAsk=&hasPic=1"]
-    rules = (
-            Rule(SgmlLinkExtractor(allow=("/", )),callback='parse_data'),
-            Rule(SgmlLinkExtractor(allow=('(.*)\.html$', )), callback='parse_data'),
-            )
-
+    rules = (Rule(SgmlLinkExtractor(allow=("/", )), callback='parse_data'),)
 
     def parse_data(self, response):
         hxs = HtmlXPathSelector(response)
@@ -28,17 +24,17 @@ class CraigSpider(CrawlSpider):
                 item['image_urls']=[]
                 if re.match('^http+', image):
                     imgurl = image
-                #If we have a relative url, append the site name to make it
-                #absolute
                 else:
-                    imgurl = urlparse.urljoin(response.url,image)
-                print imgurl 
+                    imgurl = urlparse(response.url, image)
                 item['image_urls'].append(imgurl)
                 yield item
         for url in hxs.select('//a/@href').extract():
             if re.match('^http+', url):
                 yield Request(url, callback=self.parse_data)
             else:
-                yield Request(urlparse.urljoin(response.url, url), callback=self.parse_data)
+                if re.match('email\.friend', url):
+                    pass
+                else:
+                    yield Request(urlparse.urljoin(response.url, url), callback=self.parse_data)
 
 

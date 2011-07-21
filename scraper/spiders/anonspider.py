@@ -13,8 +13,8 @@ class GlaSpider(CrawlSpider):
     allowed_domains = ['www.gla.ac.uk']
     start_urls = ["http://dcs.gla.ac.uk/"]
     rules = (
-            Rule(SgmlLinkExtractor(allow=("/", )),callback='parse_data'),
-           # Rule(SgmlLinkExtractor(allow=('(.*)\.html$', )), callback='parse_data'),
+            #Rule(SgmlLinkExtractor(allow=("/", )),callback='parse_data'),
+            Rule(SgmlLinkExtractor(allow=('(.*)\.html$', )), callback='parse_data'),
             )
 
 
