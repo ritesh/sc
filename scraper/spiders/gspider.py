@@ -11,10 +11,9 @@ class GSpider(CrawlSpider):
     """A simple spider for gumtree"""
     name = "gspider"
     allowed_domains = ["gumtree.com", "thegumtree.com","glasgow.gumtree.com"]
-    start_urls = ["http://www.gumtree.com/glasgow"]
+    start_urls = ["http://www.gumtree.com/cgi-bin/list_postings.pl?search_terms=&search_location=Glasgow&ubercat=1"]
     rules = (
             Rule(SgmlLinkExtractor(allow=("/", )),callback='parse_data'),
-            Rule(SgmlLinkExtractor(allow=('(.*)\.html$', )), callback='parse_data'),
             )
 
 
@@ -36,6 +35,9 @@ class GSpider(CrawlSpider):
                 item['image_urls'].append(imgurl)
                 yield item
         for url in hxs.select('//a/@href').extract():
-            yield Request(url, callback=self.parse_data)
+            if re.match('^http+', url):
+               yield Request(url, callback=self.parse_data)
+            else:
+               yield Request(urlparse.urljoin(url, response.url), callback=self.parse_data)
 
 

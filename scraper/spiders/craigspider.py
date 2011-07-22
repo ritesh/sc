@@ -11,8 +11,11 @@ class CraigSpider(CrawlSpider):
     """docstring for CraigSpider"""
     name = "craigslist"
     allowed_domains = ["london.craigslist.co.uk", "images.craigslist.com"]
-    start_urls = ["http://london.craigslist.co.uk/search/sss?query=&srchType=A&minAsk=&maxAsk=&hasPic=1"]
+    start_urls = ["http://london.craigslist.co.uk/"]
     rules = (Rule(SgmlLinkExtractor(allow=("/", )), callback='parse_data'),)
+    categories = re.compile('^http(.*)\/[A-Za-z]{3}/[A-Za-z]+')
+    htmlpages = re.compile('^http(.*)html$')
+    searchpage = re.compile('^http(.*)\/search\/(.*)')
 
     def parse_data(self, response):
         hxs = HtmlXPathSelector(response)
@@ -29,12 +32,7 @@ class CraigSpider(CrawlSpider):
                 item['image_urls'].append(imgurl)
                 yield item
         for url in hxs.select('//a/@href').extract():
-            if re.match('^http+', url):
+            if self.categories.match(url) or self.htmlpages.match(url) or self.searchpage.match(url):
                 yield Request(url, callback=self.parse_data)
-            else:
-                if re.match('email\.friend', url):
-                    pass
-                else:
-                    yield Request(urlparse.urljoin(response.url, url), callback=self.parse_data)
 
 
