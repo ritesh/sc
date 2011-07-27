@@ -12,10 +12,11 @@ import sqlite3
 
 class DbPipeline(object):
     def __init__(self):
-        self.dbpool = adbapi.ConnectionPool('MySQLdb', 
-                db='scraper',
-                user='root',
-                passwd='pa55w0rd',
+        self.dbpool = adbapi.ConnectionPool('MySQLdb',
+                host='storo',
+                db='ritesh',
+                user='ritesh',
+                passwd='6510',
                 cursorclass=MySQLdb.cursors.DictCursor,
                 charset='utf8',
                 use_unicode=True
@@ -28,14 +29,15 @@ class DbPipeline(object):
 
     def __insertdata(self, tx, item, spidername):
         for img in item['images']:
-            tx.execute("select * from data where url = ?", (img['url'],))
+            log.msg(type(img['url']))
+            tx.execute("select * from data where url = %s", (img['url']))
             result = tx.fetchone()
             if result:
                 log.msg("Item has been stored previously", level=log.DEBUG)
             else:
                 tx.execute(\
                         "insert into data(url, localpath, checksum, created, spidername)"
-                        "values (?, ?, ?, ?, ?)",
+                        "values (%s, %s, %s, %s, %s)",
                         (img['url'],
                          img['path'],
                          img['checksum'],

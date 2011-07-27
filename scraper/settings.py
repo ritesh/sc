@@ -16,7 +16,7 @@ DEFAULT_ITEM_CLASS = 'scraper.items.ScraperItem'
 #Fake user agent. This is a grey area! 
 USER_AGENT = 'Mozilla/5.0 (Windows; U; Windows NT 6.1; en-GB; rv:1.9.2.8) Gecko/20100722 Firefox/3.6.8'
 ITEM_PIPELINES = ['scrapy.contrib.pipeline.images.ImagesPipeline',
-'scraper.pipelines.DbSqlitePipeline']
+'scraper.pipelines.DbPipeline']
 IMAGES_STORE = '/users/mscit/1006510k/images/scraper/'
 IMAGES_MIN_HEIGHT = 110
 IMAGES_MIN_WIDTH = 110
