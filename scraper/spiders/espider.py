@@ -28,5 +28,3 @@ class ESpider(BaseSpider):
                     imgurl = urlparse.urljoin(response.url, image)
                 item['image_urls'].append(imgurl)
                 yield item
-
-
