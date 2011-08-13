@@ -6,10 +6,11 @@ from twisted.python import log
 import re,string
 import time
 import optparse
-jphide = re.compile(r"(.*)jphide\([\*]{3}\)(.*)")
-outguess = re.compile(r"(.*)outguess(.*)\([\*]{3}\)")
-jsteg = re.compile(r"(.*)jsteg(.*)\([\*]{3}\)")
-f5 = re.compile(r"(.*)f5(.*)\([\*]{3}\)")
+jphide = re.compile(r"jphide\([\*]{1,3}\)")
+outguess = re.compile(r"outguess(.*)\([\*]{1,3}\)")
+jsteg = re.compile(r"jsteg\([\*]{1,3}\)")
+f5= re.compile(r"f5\([\*]{1,3}\)", re.IGNORECASE)
+intensity = re.compile(r"[\*]{1,3}")
 typeofsteg = "jofp" #jphide, jsteg, outguess and f5
 
 def getstuff(sensitivity, spidername):
@@ -53,26 +54,27 @@ def __processdata(txn, row, data,sensitivity):
                 """INSERT INTO
                 analysis(FK_data,sensitivity,positive,jsteg,outguess,jphide,invsecrets,f5,appended,created)
                 VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)""",
-                (row,sensitivity,res[0], res[1], res[2], res[3], res[4], res[5],res[6],time.time()) 
+                (row,sensitivity,res["pos"], res["jsteg"], res["outguess"]
+                    ,res["jphide"], res["invsecrets"], res["f5"],res["appended"],time.time()) 
                 )
         print "Added to db!"
 
 def convertnum(data):
-    results = [0,0,0,0,0,0,0]
+    results = {"pos": 0, "jsteg":0, "outguess": 0, "jphide": 0, "invsecrets": 0, "f5": 0, "appended": 0}
     #results positive, jsteg, outguess, jphide, invsecrets, f5, appended
     print data
-    if jphide.match(data):
-        results[3] = 3 
-        results[0] = 1
+    if jphide.search(data):
+        results["jphide"] = len(intensity.search(jphide.search(data).group()).group())
+        results["pos"] = 1
     if outguess.match(data):
-        results[2] = 3
-        results[0] = 1
+        results["outguess"] = len(intensity.search(outguess.search(data).group()).group())
+        results["pos"] = 1
     if jsteg.match(data):
-        results[0] = 1
-        results[1] = 3
+        results["pos"] = 1
+        results["jsteg"] = len(intensity.search(jsteg.search(data).group()).group())
     if f5.match(data):
-        results[0] = 1
-        results[5] = 3
+        results["pos"] = 1
+        results["f5"] = len(intensity.search(f5.search(data).group()).group())
     return results
 if __name__ == '__main__':
     opt = optparse.OptionParser()
