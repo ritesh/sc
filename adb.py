@@ -6,6 +6,7 @@ from twisted.python import log
 import re,string
 import time
 import optparse
+import thread
 jphide = re.compile(r"jphide\([\*]{1,3}\)")
 outguess = re.compile(r"outguess(.*)\([\*]{1,3}\)")
 jsteg = re.compile(r"jsteg\([\*]{1,3}\)")
